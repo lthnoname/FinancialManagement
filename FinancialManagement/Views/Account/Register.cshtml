@@ -1,4 +1,151 @@
-﻿@page
-@model FinancialManagement.Views.Account.RegisterModel
+@model FinancialManagement.Models.ViewModels.RegisterViewModel
 @{
+    Layout = null;
+    ViewData["Title"] = "Đăng ký tài khoản - FinanceApp";
 }
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Custom Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="auth-viewport">
+        <div class="auth-card-container">
+            <!-- Left Column: Teal Brand Panel -->
+            <div class="auth-brand-side">
+                <div>
+                    <div class="brand-header">
+                        <div class="brand-logo-wrap">
+                            <div class="brand-logo-icon">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <h1 class="brand-title">FinanceApp</h1>
+                        </div>
+                        <p class="brand-description">
+                            Tham gia cộng đồng quản lý tài chính thông minh ngay hôm nay.
+                        </p>
+                    </div>
+
+                    <ul class="brand-features">
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Tạo tài khoản hoàn toàn miễn phí</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <span>Báo cáo & phân tích thu chi thông minh</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Cam kết bảo mật dữ liệu tuyệt đối</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="brand-footer">
+                    Copyright © 2026 Personal Finance.
+                </div>
+            </div>
+
+            <!-- Right Column: Register Form -->
+            <div class="auth-form-side">
+                <div class="auth-form-header">
+                    <h2 class="auth-form-title">Tạo tài khoản mới</h2>
+                    <p class="auth-form-subtitle">Điền thông tin để bắt đầu trải nghiệm</p>
+                </div>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 px-3 mb-3" style="font-size: 13px; border-radius: 8px;"></div>
+                }
+
+                <form asp-action="Register" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Username Field -->
+                    <div class="mb-2">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <input asp-for="Username" class="form-control" placeholder="Tên đăng nhập" autocomplete="username" />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger small d-block mb-1"></span>
+                    </div>
+
+                    <!-- Full Name Field -->
+                    <div class="mb-2">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-card-text"></i>
+                            </div>
+                            <input asp-for="FullName" class="form-control" placeholder="Họ và tên (tuỳ chọn)" />
+                        </div>
+                        <span asp-validation-for="FullName" class="text-danger small d-block mb-1"></span>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="mb-2">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-envelope-fill"></i>
+                            </div>
+                            <input asp-for="Email" class="form-control" type="email" placeholder="Địa chỉ Email" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small d-block mb-1"></span>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-2">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-lock-fill"></i>
+                            </div>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Mật khẩu" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small d-block mb-1"></span>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="mb-3">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Xác nhận mật khẩu" autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small d-block mb-1"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-auth-primary">
+                        <span>Đăng ký tài khoản</span>
+                    </button>
+
+                    <!-- Link to Login -->
+                    <div class="auth-switch-wrap">
+                        <span style="font-size: 13.5px; color: var(--text-muted);">Đã có tài khoản? </span>
+                        <a asp-action="Login" asp-controller="Account" class="auth-switch-link">Đăng nhập ngay</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
+

@@ -1,5 +1,150 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model FinancialManagement.Models.ViewModels.LoginViewModel
 @{
+    Layout = null;
+    ViewData["Title"] = "Đăng nhập - FinanceApp";
 }
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Custom Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="auth-viewport">
+        <div class="auth-card-container">
+            <!-- Left Column: Teal Brand Panel -->
+            <div class="auth-brand-side">
+                <div>
+                    <div class="brand-header">
+                        <div class="brand-logo-wrap">
+                            <div class="brand-logo-icon">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <h1 class="brand-title">FinanceApp</h1>
+                        </div>
+                        <p class="brand-description">
+                            FinanceApp is split-screen ASP.NET MVC login page.
+                        </p>
+                    </div>
+
+                    <ul class="brand-features">
+                        <li class="feature-item">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Đồng hành quản lý tài chính cùng FinanceApp</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <span>Cung cấp biểu đồ / chart trực quan</span>
+                        </li>
+                        <li class="feature-item">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Bảo mật tài khoản FinanceApp an toàn</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="brand-footer">
+                    Copyright © 2026 Personal Finance.
+                </div>
+            </div>
+
+            <!-- Right Column: Login Form -->
+            <div class="auth-form-side">
+                <div class="auth-form-header">
+                    <h2 class="auth-form-title">Chào mừng trở lại</h2>
+                    <p class="auth-form-subtitle">Vui lòng đăng nhập</p>
+                </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success py-2 px-3 mb-3 d-flex align-items-center" style="font-size: 13.5px; border-radius: 8px;">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 px-3 mb-3" style="font-size: 13px; border-radius: 8px;"></div>
+                }
+
+                <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Username / Email Field -->
+                    <div class="mb-1">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <input asp-for="UsernameOrEmail" class="form-control" id="txtUsername" placeholder="UsernameOrEmail" autocomplete="username" />
+                        </div>
+                        <span asp-validation-for="UsernameOrEmail" class="text-danger small d-block mb-2"></span>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-1">
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-key-fill"></i>
+                            </div>
+                            <input asp-for="Password" type="password" class="form-control" id="txtPassword" placeholder="Password" autocomplete="current-password" />
+                            <a href="javascript:void(0)" class="forgot-link" onclick="alert('Tính năng quên mật khẩu: Vui lòng liên hệ admin hoặc thử tài khoản demo.')">Quên mật khẩu?</a>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small d-block mb-2"></span>
+                    </div>
+
+                    <!-- Remember Me Option -->
+                    <div class="auth-options-row">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="RememberMe">
+                            <label class="form-check-label" for="RememberMe">
+                                RememberMe
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-auth-primary">
+                        <span>Đăng nhập</span>
+                    </button>
+
+                    <!-- Link to Register -->
+                    <div class="auth-switch-wrap">
+                        <a asp-action="Register" asp-controller="Account" class="auth-switch-link">Đăng ký ngay</a>
+                    </div>
+
+                    <!-- Quick Demo Credentials helper for easy testing -->
+                    <div class="demo-account-hint">
+                        <div>
+                            <i class="bi bi-shield-lock me-1"></i> Tài khoản Demo: <strong>admin</strong> / <strong>admin123</strong>
+                        </div>
+                        <button type="button" class="demo-btn-autofill" onclick="fillDemoCredentials()">Điền nhanh</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function fillDemoCredentials() {
+            document.getElementById('txtUsername').value = 'admin';
+            document.getElementById('txtPassword').value = 'admin123';
+        }
+    </script>
+</body>
+</html>
+

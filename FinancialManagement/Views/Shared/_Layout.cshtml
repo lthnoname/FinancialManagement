@@ -1,50 +1,106 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FinancialManagement</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - FinanceApp</title>
+    <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FinancialManagement.styles.css" asp-append-version="true" />
+    <!-- Chart.js CDN for interactive financial graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="bg-light">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FinancialManagement</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-light app-navbar">
+            <div class="container-fluid px-lg-4">
+                <!-- Brand -->
+                <a class="navbar-brand navbar-brand-custom" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-wallet2 text-primary"></i>
+                    <span>FinanceApp</span>
+                </a>
+
+                <!-- Mobile toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Navbar Links -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-lg-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link nav-link-custom active" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-grid-1x2 me-1"></i> Tổng quan
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link nav-link-custom" href="javascript:void(0)">
+                                <i class="bi bi-credit-card me-1"></i> Ví & Thẻ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="javascript:void(0)">
+                                <i class="bi bi-bar-chart-line me-1"></i> Báo cáo thu chi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="javascript:void(0)">
+                                <i class="bi bi-piggy-bank me-1"></i> Tiết kiệm & Đầu tư
+                            </a>
                         </li>
                     </ul>
+
+                    <!-- User Profile & Actions -->
+                    <div class="d-flex align-items-center gap-3">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            var fullNameClaim = User.FindFirst("FullName")?.Value;
+                            var displayName = !string.IsNullOrEmpty(fullNameClaim) ? fullNameClaim : User.Identity.Name;
+                            var initial = !string.IsNullOrEmpty(displayName) ? displayName[0].ToString().ToUpper() : "U";
+
+                            <div class="user-profile-badge">
+                                <div class="user-avatar-circle">@initial</div>
+                                <span class="d-none d-md-inline fw-semibold text-dark" style="font-size: 13.5px;">@displayName</span>
+                            </div>
+
+                            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-size: 13px; font-weight: 500;">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span class="d-none d-sm-inline">Đăng xuất</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm px-3" style="background-color: var(--primary-teal); border: none; border-radius: 8px; font-weight: 600;">
+                                Đăng nhập
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+    <div class="container-fluid px-lg-4 py-4">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - FinancialManagement - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top py-3 text-muted bg-white mt-5">
+        <div class="container-fluid px-lg-4 d-flex flex-column flex-sm-row justify-content-between align-items-center" style="font-size: 13px;">
+            <span>&copy; 2026 <strong>FinanceApp</strong> - Hệ thống quản lý tài chính cá nhân thông minh</span>
+            <span class="mt-2 mt-sm-0">Phiên bản 1.0</span>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
