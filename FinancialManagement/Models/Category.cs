@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Transactions;
 
 namespace FinancialManagement.Models
 {
@@ -29,7 +28,7 @@ namespace FinancialManagement.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //Navigation property
-        [ForeignKey("UserID")]
+        [ForeignKey("UserId")]
         public virtual User? User { get; set; }
 
         public  virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

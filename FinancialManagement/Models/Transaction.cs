@@ -20,7 +20,7 @@ namespace FinancialManagement.Models
         /// </summary>
         [Required]
         [StringLength(1)]
-        public string CategoryType { get; set; } = "E";
+        public string Type { get; set; } = "E";
 
         [Required(ErrorMessage = "Vui lòng nhập số tiền")]
         [Column(TypeName = "decimal(18,2)")]
