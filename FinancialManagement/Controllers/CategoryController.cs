@@ -32,9 +32,23 @@ namespace FinancialManagement.Controllers
             return _context.Users.Where(u => u.Username == username).Select(u => u.UserId).FirstOrDefault();
         }
 
-        public IActionResult Index()
+        // GET: /Category/
+        public async Task<IActionResult> Index()
         {
-            return View();
+            int userId = GetCurrentUserId();
+            // Lấy danh sách danh mục kèm số lượng giao dịch liên quan
+            var categories = await _context.Categories
+                .Where(c => c.UserId == userId)
+                .OrderBy(c => c.Type)
+                .ThenBy(c=>c.CategoryName)
+                .Select(c => new
+                {
+                    Category = c,
+                    TransactionCount = c.Transactions.Count()
+                })
+                .ToListAsync();
+            ViewBag.CategoriesWithCount = categories;
+            return View(categories.Select(x=>x.Category).ToList());
         }
     }
 }
