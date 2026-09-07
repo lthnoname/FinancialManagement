@@ -134,5 +134,35 @@ namespace FinancialManagement.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
+        // POST: /Category/Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int categoryId)
+        {
+            int userId = GetCurrentUserId();
+            var category = await _context.Categories
+                .Include(c => c.Transactions)
+                .FirstOrDefaultAsync(c => c.CategoryId ==  categoryId && c.UserId == userId);
+
+            if(category == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy danh mục cần xóa";
+                return RedirectToAction(nameof(Index));
+            }
+
+            //Ràng buộc dữ liệu: Nếu đã có giao dịch thì không xóa trực tiếp
+            if (category.Transactions.Any())
+            {
+                TempData["ErrorMessage"] = $"Không thể xóa danh mục '{category.CategoryName}' vì đã có {category.Transactions.Count} giao dịch liên kết!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Đã xóa thành công danh mục '{category.CategoryName}'";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
