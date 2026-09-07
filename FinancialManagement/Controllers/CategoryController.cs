@@ -50,5 +50,46 @@ namespace FinancialManagement.Controllers
             ViewBag.CategoriesWithCount = categories;
             return View(categories.Select(x=>x.Category).ToList());
         }
+
+        // POST: /Category/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(String categoryName, string type)
+        {
+            int userId = GetCurrentUserId();
+            categoryName = categoryName?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(categoryName))
+            {
+                TempData["ErrorMessage"] = "Vui lòng nhập tên danh mục";
+                return RedirectToAction(nameof(Index));
+            }
+
+            //kiểm tra trùng lặp
+            bool exists = await _context.Categories.AnyAsync(c=>
+                    c.UserId == userId &&
+                    c.CategoryName.ToLower() == categoryName.ToLower() &&
+                    c.Type == type);
+
+            if (exists)
+            {
+                TempData["ErrorMessage"] = $"Danh mục '{categoryName}' đã tồn tại trong danh sách {(type == "I" ? "Thu nhập" : "Chi tiêu")}.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var newCategory = new Category
+            {
+                UserId = userId,
+                CategoryName = categoryName,
+                Type = type,
+                CreatedAt = DateTime.Now,
+            };
+
+            _context.Categories.Add(newCategory);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Đã thêm danh mục '{categoryName}' thành công!";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
