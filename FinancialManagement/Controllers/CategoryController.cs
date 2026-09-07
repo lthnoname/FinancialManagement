@@ -91,5 +91,48 @@ namespace FinancialManagement.Controllers
             TempData["SuccessMessage"] = $"Đã thêm danh mục '{categoryName}' thành công!";
             return RedirectToAction(nameof(Index));
         }
+
+        //POST: /Category/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int categoryId, string categoryName, string type)
+        {
+            int userId = GetCurrentUserId();
+            categoryName = categoryName?.Trim() ?? string.Empty;
+
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId && c.UserId == userId);
+            if(category == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy danh mục hoặc bạn không có quyền sửa";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.IsNullOrEmpty(categoryName))
+            {
+                TempData["ErrorMessage"] = "Tên danh mục không được để trống";
+                return RedirectToAction(nameof(Index));
+            }
+
+            bool exists = await _context.Categories.AnyAsync(c =>
+                c.UserId == userId &&
+                c.CategoryId == categoryId &&
+                c.CategoryName.ToLower() == categoryName.ToLower() &&
+                c.Type == type
+            );
+
+            if (exists)
+            {
+                TempData["ErrorMessage"] = $"Đã có danh mục khác mang tên '{categoryName}' trong loại này.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            category.CategoryName = categoryName;
+            category.Type = type;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Cập nhật danh mục thành công!";
+            return RedirectToAction(nameof(Index));
+
+        }
     }
 }
