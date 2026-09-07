@@ -8,7 +8,7 @@ namespace FinancialManagement.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         [StringLength(50)]

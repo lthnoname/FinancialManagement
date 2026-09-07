@@ -7,13 +7,13 @@ namespace FinancialManagement.Models
     {
         [Key] [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int TransactionID { get; set; }
+        public int TransactionId { get; set; }
 
         [Required]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required]
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; }
 
         /// <summary>
         /// 'I' = Income (Khoản thu), 'E' = Expense (Khoản chi)

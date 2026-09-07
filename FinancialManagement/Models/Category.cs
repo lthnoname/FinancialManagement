@@ -10,10 +10,10 @@ namespace FinancialManagement.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CategoryID { get; set; }
+        public int CategoryId { get; set; }
 
         [Required]
-        public int UserID { get; set; }
+        public int UserId { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập tên danh mục")]
         [StringLength(100, ErrorMessage = "Tên danh mục không được vượt quá 100 ký tự")]
