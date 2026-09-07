@@ -22,6 +22,9 @@ namespace FinancialManagement.Models
         [StringLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
+        [StringLength(100)]
+        public string? FullName { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; }
 
