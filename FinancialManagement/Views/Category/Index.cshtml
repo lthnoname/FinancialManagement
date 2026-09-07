@@ -1,0 +1,303 @@
+﻿@model IEnumerable<FinancialManagement.Models.Category>
+@{
+    ViewData["Title"] = "Quản lý Danh mục - FinanceApp";
+    var expenseCategories = Model.Where(c => c.Type == "E").ToList();
+    var incomeCategories = Model.Where(c => c.Type == "I").ToList();
+}
+
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h3 class="fw-bold mb-1" style="color: #0f2d37;">
+                <i class="bi bi-tags-fill text-primary me-2"></i>Quản lý Danh mục Thu / Chi
+            </h3>
+            <p class="text-muted mb-0" style="font-size: 14px;">
+                Phân loại các khoản thu và chi tiêu để theo dõi dòng tiền chính xác hơn.
+            </p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 fw-semibold"
+                    style="background-color: var(--primary-teal); border: none; border-radius: 10px;"
+                    data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                <i class="bi bi-plus-lg"></i> Thêm danh mục mới
+            </button>
+        </div>
+    </div>
+
+    <!-- Thông báo kết quả -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-3" role="alert" style="border-radius: 10px;">
+            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+            <div>@TempData["SuccessMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center mb-3" role="alert" style="border-radius: 10px;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+            <div>@TempData["ErrorMessage"]</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Tabs chuyển đổi -->
+    <ul class="nav nav-pills mb-4 gap-2" id="categoryTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active px-4 py-2 fw-semibold" id="expense-tab" data-bs-toggle="tab" data-bs-target="#expense-pane" type="button" role="tab" style="border-radius: 10px;">
+                <i class="bi bi-arrow-up-right-circle-fill text-danger me-1"></i> Khoản chi tiêu (@expenseCategories.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link px-4 py-2 fw-semibold" id="income-tab" data-bs-toggle="tab" data-bs-target="#income-pane" type="button" role="tab" style="border-radius: 10px;">
+                <i class="bi bi-arrow-down-left-circle-fill text-success me-1"></i> Khoản thu nhập (@incomeCategories.Count)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="categoryTabsContent">
+        <!-- Tab Chi tiêu -->
+        <div class="tab-pane fade show active" id="expense-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm" style="border-radius: 14px; overflow: hidden;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4 py-3">Tên danh mục</th>
+                                    <th>Loại</th>
+                                    <th>Ngày tạo</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!expenseCategories.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                            Chưa có danh mục chi tiêu nào. Hãy nhấn <strong>Thêm danh mục mới</strong> để tạo!
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var item in expenseCategories)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fce8e6; color: #c5221f;">
+                                                        <i class="bi bi-bag-dash-fill"></i>
+                                                    </div>
+                                                    <span class="fw-semibold text-dark">@item.CategoryName</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Chi tiêu</span></td>
+                                            <td class="text-muted small">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-outline-secondary btn-sm me-1" style="border-radius: 8px;"
+                                                        onclick="openEditModal(@item.CategoryId, '@item.CategoryName', '@item.Type')">
+                                                    <i class="bi bi-pencil"></i> Sửa
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm" style="border-radius: 8px;"
+                                                        onclick="openDeleteModal(@item.CategoryId, '@item.CategoryName')">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Thu nhập -->
+        <div class="tab-pane fade" id="income-pane" role="tabpanel">
+            <div class="card border-0 shadow-sm" style="border-radius: 14px; overflow: hidden;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4 py-3">Tên danh mục</th>
+                                    <th>Loại</th>
+                                    <th>Ngày tạo</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!incomeCategories.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                            Chưa có danh mục thu nhập nào.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var item in incomeCategories)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #e6f4ea; color: #137333;">
+                                                        <i class="bi bi-cash-stack"></i>
+                                                    </div>
+                                                    <span class="fw-semibold text-dark">@item.CategoryName</span>
+                                                </div>
+                                            </td>
+                                            <td><span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Thu nhập</span></td>
+                                            <td class="text-muted small">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-outline-secondary btn-sm me-1" style="border-radius: 8px;"
+                                                        onclick="openEditModal(@item.CategoryId, '@item.CategoryName', '@item.Type')">
+                                                    <i class="bi bi-pencil"></i> Sửa
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm" style="border-radius: 8px;"
+                                                        onclick="openDeleteModal(@item.CategoryId, '@item.CategoryName')">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm danh mục -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-folder-plus text-primary me-2"></i>Thêm danh mục mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Create" asp-controller="Category" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small">Loại danh mục</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="type" id="createTypeExpense" value="E" checked>
+                            <label class="btn btn-outline-danger w-50" for="createTypeExpense">
+                                <i class="bi bi-arrow-up-right me-1"></i> Khoản chi
+                            </label>
+
+                            <input type="radio" class="btn-check" name="type" id="createTypeIncome" value="I">
+                            <label class="btn btn-outline-success w-50" for="createTypeIncome">
+                                <i class="bi bi-arrow-down-left me-1"></i> Khoản thu
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small">Tên danh mục</label>
+                        <input type="text" name="categoryName" class="form-control form-control-lg" placeholder="Ví dụ: Ăn uống, Tiền điện, Lương..." required maxlength="100">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" style="background-color: var(--primary-teal); border: none; border-radius: 8px;">Tạo mới</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa danh mục -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i>Chỉnh sửa danh mục</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Edit" asp-controller="Category" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryId" id="editCategoryId" />
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small">Loại danh mục</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="type" id="editTypeExpense" value="E">
+                            <label class="btn btn-outline-danger w-50" for="editTypeExpense">
+                                <i class="bi bi-arrow-up-right me-1"></i> Khoản chi
+                            </label>
+
+                            <input type="radio" class="btn-check" name="type" id="editTypeIncome" value="I">
+                            <label class="btn btn-outline-success w-50" for="editTypeIncome">
+                                <i class="bi bi-arrow-down-left me-1"></i> Khoản thu
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small">Tên danh mục</label>
+                        <input type="text" name="categoryName" id="editCategoryName" class="form-control form-control-lg" required maxlength="100">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy</button>
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" style="background-color: var(--primary-teal); border: none; border-radius: 8px;">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác nhận Xóa -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận xóa danh mục</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Delete" asp-controller="Category" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryId" id="deleteCategoryId" />
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa danh mục <strong id="deleteCategoryName"></strong> không? Thao tác này không thể hoàn tác.
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy</button>
+                    <button type="submit" class="btn btn-danger fw-semibold px-4" style="border-radius: 8px;">Xóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openEditModal(id, name, type) {
+            document.getElementById('editCategoryId').value = id;
+            document.getElementById('editCategoryName').value = name;
+            if (type === 'I') {
+                document.getElementById('editTypeIncome').checked = true;
+            } else {
+                document.getElementById('editTypeExpense').checked = true;
+            }
+            new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
+        }
+
+        function openDeleteModal(id, name) {
+            document.getElementById('deleteCategoryId').value = id;
+            document.getElementById('deleteCategoryName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
+        }
+    </script>
+}
