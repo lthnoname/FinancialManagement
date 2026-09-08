@@ -121,5 +121,67 @@ namespace FinancialManagement.Controllers
             TempData["SuccessMessage"] = "Giao dịch đã được tạo thành công.";
             return RedirectToAction(nameof(Index));
         }
+
+        // POST: /Transaction/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int transactionId, int categoryId, decimal amount, string type, DateTime transactionDate, string? note)
+        {
+            int userId = GetCurrentUserId();
+            var transaction = await _context.Transactions
+                .FirstOrDefaultAsync(t => t.TransactionId == transactionId && t.UserId == userId);
+
+            if(transaction == null)
+            {
+                TempData["ErrorMessage"] = "Giao dịch không tồn tại hoặc không thuộc tài khoản của bạn.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId && c.UserId == userId);
+            if(category == null)
+            {
+                TempData["ErrorMessage"] = "Danh mục không hợp lệ hoặc không thuộc tài khoản của bạn.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if(amount <= 0)
+            {
+                TempData["ErrorMessage"] = "Số tiền phải lớn hơn 0";
+                return RedirectToAction(nameof(Index));
+            }
+
+            transaction.CategoryId = categoryId;
+            transaction.Type = type;
+            transaction.Amount = amount;
+            transaction.TransactionDate = transactionDate;
+            transaction.Note = note?.Trim() ?? string.Empty;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Giao dịch đã được cập nhật thành công.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        //DELETE: /Transaction/Delete
+        public async Task<IActionResult> Delete(int transactionId)
+        {
+            int userId = GetCurrentUserId();
+            var transaction = await _context.Transactions
+                .FirstOrDefaultAsync(t => t.TransactionId == transactionId && t.UserId == userId);
+            
+            if(transaction == null)
+            {
+                TempData["ErrorMessage"] = "Giao dịch không tồn tại hoặc không thuộc tài khoản của bạn.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.Transactions.Remove(transaction);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Giao dịch đã được xóa thành công.";
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
