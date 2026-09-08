@@ -111,7 +111,7 @@ namespace FinancialManagement.Controllers
                 Amount = amount,
                 Type = type,
                 TransactionDate = transactionDate,
-                Note = note,
+                Note = note?.Trim() ?? string.Empty,
                 CreatedAt = DateTime.Now
             };
 
