@@ -85,7 +85,7 @@ namespace FinancialManagement.Controllers
         // POST: /Transaction/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int categoryId, decimal amount, string type, DateTime transactionDate, string? note)
+        public async Task<IActionResult> Create(int categoryId, decimal amount, DateTime transactionDate, string? note)
         {
             int userId = GetCurrentUserId();
             
@@ -109,7 +109,7 @@ namespace FinancialManagement.Controllers
                 UserId = userId,
                 CategoryId = categoryId,
                 Amount = amount,
-                Type = type,
+                Type = category.Type,
                 TransactionDate = transactionDate,
                 Note = note?.Trim() ?? string.Empty,
                 CreatedAt = DateTime.Now
@@ -125,7 +125,7 @@ namespace FinancialManagement.Controllers
         // POST: /Transaction/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int transactionId, int categoryId, decimal amount, string type, DateTime transactionDate, string? note)
+        public async Task<IActionResult> Edit(int transactionId, int categoryId, decimal amount, DateTime transactionDate, string? note)
         {
             int userId = GetCurrentUserId();
             var transaction = await _context.Transactions
@@ -152,7 +152,7 @@ namespace FinancialManagement.Controllers
             }
 
             transaction.CategoryId = categoryId;
-            transaction.Type = type;
+            transaction.Type = category.Type;
             transaction.Amount = amount;
             transaction.TransactionDate = transactionDate;
             transaction.Note = note?.Trim() ?? string.Empty;
@@ -164,6 +164,8 @@ namespace FinancialManagement.Controllers
         }
 
         //DELETE: /Transaction/Delete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int transactionId)
         {
             int userId = GetCurrentUserId();
