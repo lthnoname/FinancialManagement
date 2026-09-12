@@ -28,5 +28,7 @@ namespace FinancialManagement.Models.ViewModels
 
         // 5. Danh sách danh mục của User (dùng cho Modal "Thêm giao dịch nhanh")
         public List<Category> Categories { get; set; } = new();
+        public double balanceGrowthRate { get; set; }
+        public double incomeGrowthRate { get; set; }
     }
 }
