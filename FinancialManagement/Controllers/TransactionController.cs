@@ -185,5 +185,30 @@ namespace FinancialManagement.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ExportCsv(string? type, int? categoryId, DateTime? fromDate, DateTime? toDate)
+        {
+            int userId = GetCurrentUserId();
+            var query = _context.Transactions
+                .Include(t => t.Category)
+                .Where(t => t.UserId == userId);
+
+            if (!string.IsNullOrEmpty(type)) query = query.Where(t => t.Type == type);
+            if (categoryId.HasValue && categoryId.Value > 0) query = query.Where(t => t.CategoryId == categoryId.Value);
+            if (fromDate.HasValue) query = query.Where(t => t.TransactionDate >= fromDate.Value);
+            if (toDate.HasValue) query = query.Where(t => t.TransactionDate <= toDate.Value);
+            var transactions = await query.OrderByDescending(t => t.TransactionDate).ToListAsync();
+            var builder = new System.Text.StringBuilder();
+            // BOM UTF-8 để mở bằng Excel tiếng Việt không bị lỗi font chữ
+            builder.AppendLine("Mã GD,Ngày giao dịch,Loại,Danh mục,Số tiền,Ghi chú");
+            foreach (var item in transactions)
+            {
+                string typeStr = item.Type == "I" ? "Thu nhập" : "Chi tiêu";
+                string note = item.Note?.Replace(",", " ") ?? "";
+                builder.AppendLine($"{item.TransactionId},{item.TransactionDate:yyyy-MM-dd},{typeStr},{item.Category?.CategoryName},{item.Amount},{note}");
+            }
+            var bytes = System.Text.Encoding.UTF8.GetPreamble().Concat(System.Text.Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
+            return File(bytes, "text/csv", $"GiaoDich_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
+        }
     }
 }

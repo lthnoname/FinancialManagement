@@ -18,7 +18,17 @@
                 Ghi chép và theo dõi chi tiết từng khoản thu và chi tiêu hàng ngày.
             </p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportCsv" 
+               asp-route-type="@ViewBag.SelectedType"
+               asp-route-categoryId="@ViewBag.SelectedCategoryId"
+               asp-route-fromDate="@ViewBag.FromDate"
+               asp-route-toDate="@ViewBag.ToDate"
+               class="btn btn-outline-success d-flex align-items-center gap-2 px-3 py-2 fw-semibold"
+               style="border-radius: 10px;">
+                <i class="bi bi-file-earmark-excel"></i> Xuất CSV
+            </a>
+
             <button type="button" class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 fw-semibold"
                     style="background-color: var(--primary-teal); border: none; border-radius: 10px;"
                     data-bs-toggle="modal" data-bs-target="#createTransactionModal">
