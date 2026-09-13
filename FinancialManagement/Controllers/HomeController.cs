@@ -171,6 +171,7 @@ namespace FinancialManagement.Controllers
             return View();
         }
 
+        [AllowAnonymous]    //Cho phép tất cả mọi người truy cập trang lỗi mà không cần đăng nhập
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
