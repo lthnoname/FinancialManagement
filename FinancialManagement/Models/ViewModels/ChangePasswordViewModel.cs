@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FinacialManagement.Models.ViewModels
+namespace FinancialManagement.Models.ViewModels
 {
     public class ChangePasswordViewModel
     {
