@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using FinacialManagement.Models.ViewModels;
 using FinancialManagement.Models.ViewModels;
-
+using Microsoft.AspNetCore.Authorization;
 namespace FinancialManagement.Controllers
 {
     public class AccountController : Controller
@@ -230,6 +231,60 @@ namespace FinancialManagement.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
+        }
+        
+        //GET: /Account/ChangePassword
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+        
+        // POST: /Account/ChangePassword
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            // Lấy ID người dùng hiện tại
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int userId = 0;
+            if (!int.TryParse(userIdClaim, out userId))
+            {
+                var username = User.Identity?.Name;
+                userId = await _context.Users
+                    .Where(u => u.Username == username)
+                    .Select(u => u.UserId)
+                    .FirstOrDefaultAsync();
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+            // 1. Kiểm tra mật khẩu hiện tại bằng PasswordHasher
+            var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.CurrentPassword);
+            if (verifyResult == PasswordVerificationResult.Failed)
+            {
+                ModelState.AddModelError("CurrentPassword", "Mật khẩu hiện tại không chính xác.");
+                return View(model);
+            }
+            // 2. Không cho phép đặt mật khẩu mới trùng mật khẩu cũ
+            if (model.CurrentPassword == model.NewPassword)
+            {
+                ModelState.AddModelError("NewPassword", "Mật khẩu mới không được trùng với mật khẩu hiện tại.");
+                return View(model);
+            }
+            // 3. Hash mật khẩu mới và lưu vào CSDL
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+            return RedirectToAction("Index", "Home");
         }
     }
 }
