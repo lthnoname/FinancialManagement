@@ -73,6 +73,26 @@ namespace FinancialManagement.Controllers
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+                
+                // Khởi tạo danh mục mặc định cho user mới
+                var defaultCategories = new List<Category>
+                {
+                    // Thu nhập (I)
+                    new Category { UserId = user.UserId, CategoryName = "Tiền lương", Type = "I", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Tiền thưởng", Type = "I", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Đầu tư", Type = "I", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Thu nhập khác", Type = "I", CreatedAt = DateTime.Now },
+                    // Chi tiêu (E)
+                    new Category { UserId = user.UserId, CategoryName = "Ăn uống", Type = "E", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Đi lại / Xăng xe", Type = "E", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Tiền nhà / Điện nước", Type = "E", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Mua sắm cá nhân", Type = "E", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Giải trí", Type = "E", CreatedAt = DateTime.Now },
+                    new Category { UserId = user.UserId, CategoryName = "Y tế & Sức khỏe", Type = "E", CreatedAt = DateTime.Now }
+                };
+                
+                _context.Categories.AddRange(defaultCategories);
+                await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Đăng ký tài khoản thành công! Vui lòng đăng nhập.";
                 return RedirectToAction("Login");
