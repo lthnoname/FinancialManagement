@@ -39,6 +39,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Xử lý mã lỗi HTTP như 404, 403, 500
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
